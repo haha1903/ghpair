@@ -4,6 +4,7 @@ GHSERVER="$1"
 URL_BASE="$2"
 GHPASSWD="$3"
 SSPASSWD="$4"
+SSPORT="$5"
 
 apt-get -y update
 apt-get -y dist-upgrade
@@ -48,16 +49,11 @@ KillSignal = SIGTERM
 WantedBy = multi-user.target
 EOF
 
-# Install shadowsocks server
-#curl "$URL_BASE/ss-server" -o /usr/local/bin/ss-server
-#chmod +x /usr/local/bin/ss-server
-#mkdir /etc/shadowsocks-libev
-
 # Create shadowsocks config file
 cat << EOF > /etc/shadowsocks-libev/config.json
 {
     "server":"0.0.0.0",
-    "server_port":43261,
+    "server_port":$SSPORT,
     "password":"$SSPASSWD",
     "timeout":300,
     "method":"aes-256-cfb",

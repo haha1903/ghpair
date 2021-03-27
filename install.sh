@@ -10,6 +10,8 @@ cd `dirname $0`
 # Make tr work under OSX
 export LC_ALL=C
 GROUP_NAME="gohop"
+SERVER_LOCATION="southeastasia"
+CLIENT_LOCATION="chinaeast2"
 SSPORT=43456
 
 # Generate passwords
@@ -22,66 +24,23 @@ if [ ! -f $HOME/.ssh/id_rsa-gohop.pub ]; then
 fi
 SSHKEY=`cat $HOME/.ssh/id_rsa-gohop.pub`
 
-# Generate gohop server parameters
-cat << EOF > server.param.json
-{
-  "\$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "adminUsername": {
-      "value": "$USER"
-    },
-    "ghPassword": {
-      "value": "$GHPASS"
-    },
-    "sshPublicKey": {
-      "value": "$SSHKEY"
-    }
-  }
-}
-EOF
-
 echo "Logging into azure.com..."
 az cloud set -n AzureCloud
 az account set -s "$AZURE_COM_SUB"
 echo "Deploying Gohop server..."
-az group create -n $GROUP_NAME -l southeastasia
-az group deployment create -g $GROUP_NAME --template-file server/server.json --parameters @server.param.json
-GHSADDR=`az network public-ip list -g $GROUP_NAME | grep "ipAddress" | cut -d'"' -f4`
+az deployment sub create -l $SERVER_LOCATION -f server/main.bicep -p rgName="$GROUP_NAME" \
+    -p sshPublicKey="$SSHKEY" -p ghPassword="$GHPASS"
+GHSADDR=`az network public-ip show -n goserver-ip -g $GROUP_NAME | jq -r '.ipAddress'`
 echo "Gohop server is running at $GHSADDR:40000-41000"
 
-# Generate gohop client parameters
-cat << EOF > client.param.json
-{
-  "\$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "adminUsername": {
-      "value": "$USER"
-    },
-    "sshPublicKey": {
-      "value": "$SSHKEY"
-    },
-    "ghPassword": {
-      "value": "$GHPASS"
-    },
-    "ssPassword": {
-      "value": "$SSPASS"
-    },
-    "ghServer": {
-        "value": "$GHSADDR"
-    }
-  }
-}
-EOF
-
+# Create gohop client
 echo "Logging into azure.cn..."
 az cloud set -n AzureChinaCloud
 az account set -s "$AZURE_CN_SUB"
 echo "Deploying Gohop client and shadowsocks server..."
-az group create -n $GROUP_NAME -l chinaeast2
-az group deployment create -g $GROUP_NAME --template-file client/client.json --parameters @client.param.json
-GHCADDR=`az network public-ip list -g $GROUP_NAME | grep "ipAddress" | cut -d'"' -f4`
+az deployment sub create -l $CLIENT_LOCATION -f client/main.bicep -p rgName="$GROUP_NAME" -p sshPublicKey="$SSHKEY" \
+    -p ghPassword="$GHPASS" -p ssPassword="$SSPASS" -p ssPort="$SSPORT" -p ghServer="$GHSADDR"
+GHCADDR=`az network public-ip show -n goclient-ip -g $GROUP_NAME | jq -r '.ipAddress'`
 echo "Shadowsocks server is running at $GHCADDR:$SSPORT"
 
 echo "Using following config file for shadowsocks client:"
