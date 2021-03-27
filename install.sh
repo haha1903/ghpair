@@ -9,11 +9,12 @@ cd `dirname $0`
 
 # Make tr work under OSX
 export LC_ALL=C
-GROUP_NAME="hai"
+GROUP_NAME="gohop"
+SSPORT=43456
 
 # Generate passwords
-GHPASS=`date |md5 | head -c8`
-SSPASS=`date |md5 | head -c8`
+GHPASS=`date | md5 | head -c8`
+SSPASS=`date | md5 | head -c8`
 
 # Generate ssh key
 if [ ! -f $HOME/.ssh/id_rsa-gohop.pub ]; then
@@ -81,13 +82,13 @@ echo "Deploying Gohop client and shadowsocks server..."
 az group create -n $GROUP_NAME -l chinaeast2
 az group deployment create -g $GROUP_NAME --template-file client/client.json --parameters @client.param.json
 GHCADDR=`az network public-ip list -g $GROUP_NAME | grep "ipAddress" | cut -d'"' -f4`
-echo "Shadowsocks server is running at $GHCADDR:9488"
+echo "Shadowsocks server is running at $GHCADDR:$SSPORT"
 
 echo "Using following config file for shadowsocks client:"
 cat << EOF
 {
     "server":"$GHCADDR",
-    "server_port":9488,
+    "server_port":$SSPORT,
     "local_address":"local_address_to_bind",
     "local_port": local_port_to_bind,
     "password":"$SSPASS",
@@ -95,7 +96,7 @@ cat << EOF
     "method":"aes-256-cfb"
 }
 EOF
-SSURL=`echo "aes-256-cfb:$SSPASS@$GHCADDR:9488" | base64`
+SSURL=`echo "aes-256-cfb:$SSPASS@$GHCADDR:$SSPORT" | base64`
 
 echo
 echo
