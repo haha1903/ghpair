@@ -5,18 +5,17 @@ param sshPublicKey string
 @description('Gohop password.')
 param ghPassword string
 
-var publicIPAddresseName = 'goserver-ip'
 var adminUsername = 'azureuser'
 var osImagePublisher = 'Canonical'
 var osImageOffer = 'UbuntuServer'
 var osImageSKU = '18.04-LTS'
 var virtualMachineName = 'goserver'
+var publicIPAddresseName = 'goserver-ip'
 var networkInterfaceName = 'goserver-nic'
 var networkSecurityGroupName = 'goserver-nsg'
 var virtualNetworkName = 'goserver-vnet'
 var sshKeyPath = '/home/${adminUsername}/.ssh/authorized_keys'
 var storageAccountType = 'StandardSSD_LRS'
-var storageAccountName = uniqueString(resourceGroup().id, deployment().name)
 var scriptUrlBase = 'https://raw.githubusercontent.com/haha1903/ghpair/master'
 var scriptName = 'server.sh'
 var scriptUrl = '${scriptUrlBase}/server/${scriptName}'

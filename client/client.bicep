@@ -5,19 +5,18 @@ param ghPassword string
 param ssPassword string
 param ssPort string
 
-var publicIPAddresseName = 'goclient-ip'
 var adminUsername = 'azureuser'
 var osImagePublisher = 'Canonical'
 var osImageOffer = 'UbuntuServer'
 var osImageSKU = '18.04-LTS'
 var virtualMachineName = 'goclient'
+var publicIPAddresseName = 'goclient-ip'
 var networkInterfaceName = 'goclient-nic'
 var networkSecurityGroupName = 'goclient-nsg'
 var virtualNetworkName = 'goclient-vnet'
 var clusterFqdn = 'ghserver-${uniqueString(resourceGroup().id, deployment().name)}'
 var sshKeyPath = '/home/${adminUsername}/.ssh/authorized_keys'
 var storageAccountType = 'StandardSSD_LRS'
-var storageAccountName_var = uniqueString(resourceGroup().id, deployment().name)
 var scriptUrlBase = 'https://raw.githubusercontent.com/haha1903/ghpair/master'
 var scriptName = 'client.sh'
 var scriptUrl = '${scriptUrlBase}/client/${scriptName}'

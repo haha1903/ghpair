@@ -28,8 +28,8 @@ echo "Logging into azure.com..."
 az cloud set -n AzureCloud
 az account set -s "$AZURE_COM_SUB"
 echo "Deploying Gohop server..."
-az deployment sub create -l $SERVER_LOCATION -f server/main.bicep -p rgName="$GROUP_NAME" \
-    -p sshPublicKey="$SSHKEY" -p ghPassword="$GHPASS"
+az deployment sub create -l $SERVER_LOCATION -f server/main.bicep -p rgName="$GROUP_NAME" -p sshPublicKey="$SSHKEY" \
+    -p ghPassword="$GHPASS"
 GHSADDR=`az network public-ip show -n goserver-ip -g $GROUP_NAME | jq -r '.ipAddress'`
 echo "Gohop server is running at $GHSADDR:40000-41000"
 

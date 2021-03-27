@@ -19,6 +19,7 @@ mkdir -p /etc/gohop/scripts
 curl "$URL_BASE/client/chnroute-up.sh" -o /etc/gohop/scripts/chnroute-up.sh
 curl "$URL_BASE/client/chnroute-down.sh" -o /etc/gohop/scripts/chnroute-down.sh
 chmod +x /etc/gohop/scripts/chnroute-up.sh /etc/gohop/scripts/chnroute-down.sh
+
 cat << EOF > /etc/gohop/client.ini
 [default]
 mode = client
@@ -63,28 +64,12 @@ cat << EOF > /etc/shadowsocks-libev/config.json
 }
 EOF
 
-# Create shadowsocks service configuration for systemd
-#cat << EOF > /etc/systemd/system/shadowsocks-libev.service
-#[Unit]
-#Description = Shadowsocks-libev server
-#After = network.target
-#[Service]
-#Type=simple
-#User=root
-#LimitNOFILE=32768
-#ExecStart=/usr/local/bin/ss-server -c /etc/shadowsocks-libev/config.json -u
-#[Install]
-#WantedBy = multi-user.target
-#EOF
-
 # Regenerage /etc/resolv.conf
-#echo "DNS1=8.8.8.8" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-#echo "DNS2=8.8.4.4" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-#systemctl restart network.service
 systemctl disable systemd-resolved.service
 systemctl stop systemd-resolved
 rm /etc/resolv.conf
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.4.4" > /etc/resolv.conf
 
 # Manually start all services, no wait to next reboot
 systemctl enable gohop-client.service
