@@ -9,7 +9,7 @@ cd `dirname $0`
 
 # Make tr work under OSX
 export LC_ALL=C
-GROUP_NAME="gohop"
+GROUP_NAME="hai"
 SERVER_LOCATION="southeastasia"
 CLIENT_LOCATION="chinaeast2"
 SSPORT=43456

@@ -4,6 +4,7 @@ param ghServer string
 param ghPassword string
 param ssPassword string
 param ssPort string
+param location string = resourceGroup().location
 
 var adminUsername = 'azureuser'
 var osImagePublisher = 'Canonical'
@@ -23,11 +24,11 @@ var scriptUrl = '${scriptUrlBase}/client/${scriptName}'
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2020-12-01' = {
   name: virtualMachineName
-  location: resourceGroup().location
+  location: location
   tags: {}
   properties: {
     hardwareProfile: {
-      vmSize: 'Standard_A1_v2'
+      vmSize: 'Standard_B2s'
     }
     storageProfile: {
       imageReference: {
@@ -72,7 +73,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2020-12-01' = {
 
 resource virtualMachineConfig 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
   name: '${virtualMachine.name}/config'
-  location: resourceGroup().location
+  location: location
   properties: {
     publisher: 'Microsoft.OSTCExtensions'
     type: 'CustomScriptForLinux'
@@ -89,7 +90,7 @@ resource virtualMachineConfig 'Microsoft.Compute/virtualMachines/extensions@2020
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@2020-08-01' = {
   name: networkInterfaceName
-  location: resourceGroup().location
+  location: location
   properties: {
     ipConfigurations: [
       {
@@ -114,7 +115,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2020-08-01' = {
 
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
   name: networkSecurityGroupName
-  location: resourceGroup().location
+  location: location
   properties: {
     securityRules: [
       {
@@ -149,7 +150,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2020-08-0
 
 resource publicIPAddresse 'Microsoft.Network/publicIPAddresses@2020-08-01' = {
   name: publicIPAddresseName
-  location: resourceGroup().location
+  location: location
   properties: {
     publicIPAllocationMethod: 'Dynamic'
     dnsSettings: {
@@ -160,7 +161,7 @@ resource publicIPAddresse 'Microsoft.Network/publicIPAddresses@2020-08-01' = {
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-08-01' = {
   name: virtualNetworkName
-  location: resourceGroup().location
+  location: location
   properties: {
     addressSpace: {
       addressPrefixes: [

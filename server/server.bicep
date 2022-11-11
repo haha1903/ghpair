@@ -26,7 +26,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2020-12-01' = {
   tags: {}
   properties: {
     hardwareProfile: {
-      vmSize: 'Standard_A1_v2'
+      vmSize: 'Standard_B2s'
     }
     storageProfile: {
       imageReference: {
