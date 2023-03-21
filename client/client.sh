@@ -6,9 +6,9 @@ GHPASSWD="$3"
 SSPASSWD="$4"
 SSPORT="$5"
 
-apt-get -y update
-apt-get -y dist-upgrade
-apt-get -y install curl shadowsocks-libev
+sudo apt-get -y update
+sudo apt-get -y dist-upgrade
+sudo apt-get -y install curl shadowsocks-libev
 
 # Install gohop
 curl "$URL_BASE/gohop" -o /usr/local/bin/gohop
